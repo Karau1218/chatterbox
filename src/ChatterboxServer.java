@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
  * - Prompts each client for "username password".
  * - Authenticates against the credentials map.
  * - After auth, broadcasts each client message to all connected clients.
+ * - Sends a server heartbeat to all clients every 10 seconds.
  */
 public class ChatterboxServer {
     /** Maximum simultaneous authenticated clients / pool size. */
@@ -192,11 +193,27 @@ public class ChatterboxServer {
 
     /**
      * Accept clients forever and handle each one in the thread pool.
+     * Also starts a heartbeat thread that broadcasts every 10 seconds.
      *
      * @throws IOException if the ServerSocket cannot be opened
      */
     public void serve() throws IOException {
         ExecutorService pool = Executors.newFixedThreadPool(MAX_CONNECTIONS);
+
+        // Heartbeat thread (daemon so it won't block JVM shutdown)
+        Thread heartbeat = new Thread(() -> {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    Thread.sleep(10_000);
+                    sendToAll("SERVER", "heartbeat");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // exit cleanly
+            }
+        });
+        heartbeat.setDaemon(true);
+        heartbeat.start();
+
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server listening on port " + port + "...");
             while (true) {
@@ -210,6 +227,7 @@ public class ChatterboxServer {
                 });
             }
         } finally {
+            heartbeat.interrupt();
             pool.shutdownNow();
         }
     }

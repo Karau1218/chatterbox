@@ -56,6 +56,9 @@ public class ChatterboxClient {
             System.err.println(e.getMessage());
             System.err.println("Usage: javac src/*.java && java -cp src ChatterboxClient HOST PORT USERNAME PASSWORD");
             System.exit(1);
+        } catch (UnsupportedOperationException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
         System.out.println("Read options: " + options.toString());
 
@@ -125,7 +128,8 @@ public class ChatterboxClient {
      */
     public static ChatterboxOptions parseArgs(String[] args) throws IllegalArgumentException {
         // TODO: read args in the required order and return new ChatterboxOptions(host, port, username, password)
-        return null;
+        // Remove this exception
+        throw new UnsupportedOperationException("Argument parsing not yet implemented. Implement parseArgs and remove this exception");
     }
 
     /**
