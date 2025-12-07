@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 
-WORKING ON FILE NOW: REMOVE LATER -- REMEMBER TO REMOVE THIS LINE: 
+// WORKING ON FILE NOW: REMOVE LATER -- REMEMBER TO REMOVE THIS LINE: 
 
 
 /**
@@ -131,8 +131,31 @@ public class ChatterboxClient {
     public static ChatterboxOptions parseArgs(String[] args) throws IllegalArgumentException {
         // TODO: read args in the required order and return new ChatterboxOptions(host, port, username, password)
         // Remove this exception
-        throw new UnsupportedOperationException("Argument parsing not yet implemented. Implement parseArgs and remove this exception");
+        // throw new UnsupportedOperationException("Argument parsing not yet implemented. Implement parseArgs and remove this exception");
+        if ( args.length != 4) {
+                throw new IllegalArgumentException("Expected 4 arguments: HOST PORT USERNAME PASSWORD");
+
+        }
+    String host = args[0];
+    String portString = args[1];
+    String username = args[2];
+    String password = args[3];
+
+    int port;
+    try {
+        port = Integer.parseInt(portString);
+    } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("Port must be a valid integer.");
     }
+
+    if (port < 1 || port > 65535) {
+        throw new IllegalArgumentException("Port must be between 1 and 65535.");
+    }
+
+    return new ChatterboxOptions(host, port, username, password);
+}
+
+    
 
     /**
      * Construct a ChatterboxClient from already-parsed options and user streams.
@@ -152,7 +175,18 @@ public class ChatterboxClient {
 
         throw new UnsupportedOperationException("Constructor not yet implemented. Implement ChatterboxClient constructor and remove this exception");
         // TODO: copy options.getHost(), getPort(), getUsername(), getPassword() into fields
-    }
+    // Save user I/O streams
+    this.userInput = new Scanner(userInput, StandardCharsets.UTF_8);
+    this.userOutput = userOutput;
+
+    // Copy option fields into instance variables
+    this.host = options.getHost();
+    this.port = options.getPort();
+    this.username = options.getUsername();
+    this.password = options.getPassword();
+}
+
+    
 
     /**
      * Open a TCP connection to the server.
