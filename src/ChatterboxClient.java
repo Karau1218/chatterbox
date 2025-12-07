@@ -6,6 +6,10 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+import java.net.Socket;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
 
 // WORKING ON FILE NOW: REMOVE LATER -- REMEMBER TO REMOVE THIS LINE: 
 
@@ -200,11 +204,26 @@ public class ChatterboxClient {
      * @throws IOException if the socket cannot be opened
      */
     public void connect() throws IOException {
-        throw new UnsupportedOperationException("Connect not yet implemented. Implement connect() and remove this exception!");
+        // throw new UnsupportedOperationException("Connect not yet implemented. Implement connect() and remove this exception!");
 
         // Make sure to have this.serverReader and this.serverWriter set by the end of this method!
         // hint: get the streams from the sockets, use those to create the InputStreamReader/OutputStreamWriter and the BufferedReader/BufferedWriter
-    }
+
+        //FRED: --> WAVE4 PART
+        //  Added socket connection 
+        Socket socket = new Socket(this.host, this.port);         
+
+    // Create UTF-8 input reader
+    InputStreamReader inputStreamReader =
+        new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8);
+    this.serverReader = new BufferedReader(inputStreamReader);
+
+    // Create UTF-8 output writer
+    OutputStreamWriter outputStreamWriter =
+        new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
+    this.serverWriter = new BufferedWriter(outputStreamWriter);
+}
+
 
     /**
      * Authenticate with the server using the simple protocol.
