@@ -295,7 +295,41 @@ public class ChatterboxClient {
      * @throws IOException
      */
     public void streamChat() throws IOException {
-        throw new UnsupportedOperationException("Chat streaming not yet implemented. Implement streamChat() and remove this exception!");
+        // throw new UnsupportedOperationException("Chat streaming not yet implemented. Implement streamChat() and remove this exception!");
+        
+        // FRED: --> 
+
+        //ADDED THE PRINT CHATS FOR WAVE 6
+        // printIncomingChats();
+
+        // updated the printincoming chats and added the try method
+   Thread incomingThread = new Thread(() -> {
+        try {
+            printIncomingChats();
+        } catch (IOException e) {
+            // When server disconnects, this will end
+        }
+    });
+
+    Thread outgoingThread = new Thread(() -> {
+        try {
+            sendOutgoingChats();
+        } catch (IOException e) {
+            // Writing failed (server likely disconnected)
+        }
+    });
+
+    incomingThread.start();
+    outgoingThread.start();
+
+    try {
+        incomingThread.join();
+        outgoingThread.join();
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+
+
     }
 
     /**
@@ -312,9 +346,16 @@ public class ChatterboxClient {
      * - If an IOException happens, treat it as disconnect:
      *   print a message to userOutput and exit.
      */
-    public void printIncomingChats() {
+    public void printIncomingChats() throws IOException{
         // Listen on serverReader
         // Write to userOutput, NOT System.out
+
+        // WAVE 6: 
+        String line;
+    while ((line = serverReader.readLine()) != null) {
+        userOutput.write((line + "\n").getBytes(StandardCharsets.UTF_8));
+        userOutput.flush();
+    }
     }
 
     /**
@@ -329,10 +370,13 @@ public class ChatterboxClient {
      * - If writing fails (IOException), the connection is gone:
      *   print a message to userOutput and exit.
      */
-    public void sendOutgoingChats() {
+    public void sendOutgoingChats() throws IOException{
         // Use the userInput to read, NOT System.in directly
         // loop forever reading user input
         // write to serverOutput
+        
+        // WAVE 7: 
+    
     }
 
     public String getHost() {
