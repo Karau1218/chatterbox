@@ -10,8 +10,8 @@ import java.net.Socket;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-
-/*Worked on WAVE  1 - 7
+/*
+Worked on WAVE  1 - 7
 MOST OF MY COMMENTS BEGIN WITH NOTE, some dont have but the main ones
 have NOTE
  */
@@ -149,7 +149,7 @@ public class ChatterboxClient {
 
         }
 
-        //NOTE: The expeced order based on LINE 121
+        //NOTE: The expeced order based on LINE 124
     String host = args[0];
     String portString = args[1];
     String username = args[2];
@@ -157,7 +157,7 @@ public class ChatterboxClient {
 
     int port;
     try {
-        // NOTE: This attemps to convert port String to Intger
+        // NOTE: This is for converting the portString to Integer
         //Its required coz the PORT is numerical
         port = Integer.parseInt(portString);
     } catch (NumberFormatException e) {
@@ -193,11 +193,11 @@ public class ChatterboxClient {
        
         this.userOutput = userOutput;
 
-        // NOTE: add // on line 184 --> so it removes the red scuiggle line in line 188
+        // NOTE: add // on line 196-> so it removes the red scuiggle line in line 188
         // throw new UnsupportedOperationException("Constructor not yet implemented. Implement ChatterboxClient constructor and remove this exception");
         // TODO: copy options.getHost(), getPort(), getUsername(), getPassword() into fields
     
-        // NOTE: In the this.host (line 197 - 201) the constructor just saves the data
+        // NOTE: In the this.host (line 202 - 205) the constructor just saves the data
         // into the client's memory for them to be used with other methods
     this.host = options.getHost();
     this.port = options.getPort();
@@ -303,7 +303,7 @@ public class ChatterboxClient {
 
     // Read server response
     String response = serverReader.readLine();
-    // NOTE: If response returns null, server disconnects
+    // NOTE: If response is null, server disconnects
     if (response == null) {
         throw new IOException("Server disconnected during authentication.");
     }
@@ -342,7 +342,7 @@ public class ChatterboxClient {
         // throw new UnsupportedOperationException("Chat streaming not yet implemented. Implement streamChat() and remove this exception!");
         
         // NOTE: in this wave, the incoming thread runs the thread printincomingchats everytime
-        // the client can then keep reading the messages of the server  
+        //thus helps the client can then keep reading the messages of the server  
         // The lambda makes the thread  shorter and cleaner. (eg line 351 with ->)
 
 
