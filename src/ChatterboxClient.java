@@ -11,7 +11,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 
-
+/*Worked on WAVE  1 - 7
+MOST OF MY COMMENTS BEGIN WITH NOTE, some dont have but the main ones
+have NOTE
+ */
 
 
 /**
@@ -44,8 +47,8 @@ public class ChatterboxClient {
     private OutputStream userOutput; // for printing to user
 
     // Readers/Writers for server I/O (set up in connect())
-    private BufferedReader serverReader; // for reading from the server
-    private BufferedWriter serverWriter; // for writing to the server
+    private BufferedReader serverReader; // for reading from the network socket
+    private BufferedWriter serverWriter; // for writing to the network socket
 
     /**
      * Program entry.
@@ -139,10 +142,14 @@ public class ChatterboxClient {
         // TODO: read args in the required order and return new ChatterboxOptions(host, port, username, password)
         // Remove this exception
         // throw new UnsupportedOperationException("Argument parsing not yet implemented. Implement parseArgs and remove this exception");
+
+        // NOTE: We need 4 arguments of validation for the program
         if ( args.length != 4) {
                 throw new IllegalArgumentException("Expected 4 arguments: HOST PORT USERNAME PASSWORD");
 
         }
+
+        //NOTE: The expeced order based on LINE 121
     String host = args[0];
     String portString = args[1];
     String username = args[2];
@@ -150,8 +157,11 @@ public class ChatterboxClient {
 
     int port;
     try {
+        // NOTE: This attemps to convert port String to Intger
+        //Its required coz the PORT is numerical
         port = Integer.parseInt(portString);
     } catch (NumberFormatException e) {
+        // NOTE: It rhrows when the string isnt a valid numnber 
         throw new IllegalArgumentException("The port has to be a valid integer.");
     }
 
@@ -177,14 +187,18 @@ public class ChatterboxClient {
      * @param userOutput stream to print data to the user
      */
     public ChatterboxClient(ChatterboxOptions options, InputStream userInput, OutputStream userOutput) {
+        // NOTE: THE utf 8 is for the character encoding
+        // NOTE: the userinput gets the input then the chat starts
         this.userInput = new Scanner(userInput, StandardCharsets.UTF_8);
+       
         this.userOutput = userOutput;
 
         // NOTE: add // on line 184 --> so it removes the red scuiggle line in line 188
         // throw new UnsupportedOperationException("Constructor not yet implemented. Implement ChatterboxClient constructor and remove this exception");
         // TODO: copy options.getHost(), getPort(), getUsername(), getPassword() into fields
     
-
+        // NOTE: In the this.host (line 197 - 201) the constructor just saves the data
+        // into the client's memory for them to be used with other methods
     this.host = options.getHost();
     this.port = options.getPort();
     this.username = options.getUsername();
@@ -216,10 +230,17 @@ public class ChatterboxClient {
         // hint: get the streams from the sockets, use those to create the InputStreamReader/OutputStreamWriter and the BufferedReader/BufferedWriter
 
         //FRED: --> WAVE4 PART
-        //  Added socket connection 
+        // NOTE: Added socket connection
+        // NOTE: The socket line makes the call --> then establish connection
+        // if server's not there rhe exception is throen 
+        // NOTE: The socket initializes the connection to the specified host and port
+
         Socket socket = new Socket(this.host, this.port);         
 
-    // Create UTF-8 input reader
+    // NOTE: Create UTF-8 input reader
+    // NOTE: the socketgetinputstream --> gets the byte stram from the netword
+    // NOTE: the inputstramreader changes the raw bytes to readable UTF 8 Texts 
+    // that we can read
     InputStreamReader inputStreamReader =
         new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8);
     this.serverReader = new BufferedReader(inputStreamReader);
@@ -227,7 +248,9 @@ public class ChatterboxClient {
     // Create UTF-8 output writer
     OutputStreamWriter outputStreamWriter =
         new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
-    this.serverWriter = new BufferedWriter(outputStreamWriter);
+    // NOTE: The buffered writer helps send the text to the server --> 
+    // kinda like an outbox in gmail
+        this.serverWriter = new BufferedWriter(outputStreamWriter);
 }
 
 
@@ -260,35 +283,40 @@ public class ChatterboxClient {
         // send messages using serverWriter (don't forget to flush!)
 
         
-        // Read users prompt if there is     
+        // NOTE: Read users prompt if there is     
     String prompt = serverReader.readLine();
     if (prompt == null) {
           throw new IOException("Server disconnected before authentication prompt.");
     }
 
-    // Prompt sent to the user
+    // NOTE: Prompt sent to the user
+    // NOTE: The getBytes() --> changes tect into bytes to be sent 
+    // to the outstream
     userOutput.write((prompt + "\n").getBytes(StandardCharsets.UTF_8));
     userOutput.flush();
 
-    // Send username and password
+    // NOTE: Send username and password as required by the server
     String loginLine = username + " " + password;
     serverWriter.write(loginLine + "\n");
+    // NOTE: The flush() sends it to the server directly for the login attempt
     serverWriter.flush();
 
     // Read server response
     String response = serverReader.readLine();
+    // NOTE: If response returns null, server disconnects
     if (response == null) {
         throw new IOException("Server disconnected during authentication.");
     }
      
-    //response to the user
+    //NOTE: server's response to the user
     userOutput.write((response + "\n").getBytes(StandardCharsets.UTF_8));
     userOutput.flush();
 
-    // if successful
+    //NOTE: if successful, you get welcome, if not an exception is thrown
         if (response.startsWith("Welcome")) {
     } else {
-        // Failed authentication
+    // NOTE: Failed authentication throws an exception
+    // if the main method catches the exception it directly exits the client
         throw new IllegalArgumentException(response);
     }
 
@@ -313,6 +341,10 @@ public class ChatterboxClient {
     public void streamChat() throws IOException {
         // throw new UnsupportedOperationException("Chat streaming not yet implemented. Implement streamChat() and remove this exception!");
         
+        // NOTE: in this wave, the incoming thread runs the thread printincomingchats everytime
+        // the client can then keep reading the messages of the server  
+        // The lambda makes the thread  shorter and cleaner. (eg line 351 with ->)
+
 
         //ADDED THE PRINT CHATS FOR WAVE 6
         // printIncomingChats();
@@ -322,7 +354,8 @@ public class ChatterboxClient {
         try {
             printIncomingChats();
         } catch (IOException e) {
-            // When server disconnects, this will end
+            // When server disconnects, this will throw the exception and 
+            // the thread ends there
         }
     });
 
@@ -334,10 +367,12 @@ public class ChatterboxClient {
         }
     });
 
+    // NOTE: Both of these start at the same time
     incomingThread.start();
     outgoingThread.start();
 
     try {
+        // this tells the main thread to wait until its done reading messages
         incomingThread.join();
         outgoingThread.join();
     } catch (InterruptedException e) {
@@ -367,8 +402,12 @@ public class ChatterboxClient {
 
         // WAVE 6 continuation:  
         String line;
+        // NOTE: As long as the readline is not null, the loop continues
+        // as long as there are readlines or texts added. It will continue reading
     while ((line = serverReader.readLine()) != null) {
+        // 
         userOutput.write((line + "\n").getBytes(StandardCharsets.UTF_8));
+        // NOTE: Flush so the user sees the message ASAP
         userOutput.flush();
     }
     }
@@ -392,8 +431,9 @@ public class ChatterboxClient {
         
         // WAVE 7: 
         while (true) {
+            // NOTE: This is to check if there is anothe rline to read
         if (!userInput.hasNextLine()) {
-            break;
+            break; // if not found break and exit
         }
         String message = userInput.nextLine();
         serverWriter.write(message + "\n");
