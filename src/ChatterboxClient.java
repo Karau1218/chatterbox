@@ -180,7 +180,7 @@ public class ChatterboxClient {
         this.userInput = new Scanner(userInput, StandardCharsets.UTF_8);
         this.userOutput = userOutput;
 
-        // NOTE: add // on line 177 --> so it removes the red scuiggle line in line 181
+        // NOTE: add // on line 184 --> so it removes the red scuiggle line in line 188
         // throw new UnsupportedOperationException("Constructor not yet implemented. Implement ChatterboxClient constructor and remove this exception");
         // TODO: copy options.getHost(), getPort(), getUsername(), getPassword() into fields
     
@@ -206,6 +206,9 @@ public class ChatterboxClient {
      *
      * @throws IOException if the socket cannot be opened
      */
+
+     //THis is wave 4 --> Connect
+
     public void connect() throws IOException {
         // throw new UnsupportedOperationException("Connect not yet implemented. Implement connect() and remove this exception!");
 
@@ -249,12 +252,14 @@ public class ChatterboxClient {
      * @throws IOException for network errors
      * @throws IllegalArgumentException for bad credentials / server rejection
      */
+
+     //THis is wave 5 --> Authenticate
     public void authenticate() throws IOException, IllegalArgumentException {
         // throw new UnsupportedOperationException("Authenticate not yet implemented. Implement authenticate() and remove this exception!");
         // Hint: use the username/password instance variables, DO NOT READ FROM userInput
         // send messages using serverWriter (don't forget to flush!)
 
-        // WAVE 5
+        
         // Read users prompt if there is     
     String prompt = serverReader.readLine();
     if (prompt == null) {
@@ -303,10 +308,11 @@ public class ChatterboxClient {
      *
      * @throws IOException
      */
+
+    //  this is for wave 6 & 7 --> Chat streaming
     public void streamChat() throws IOException {
         // throw new UnsupportedOperationException("Chat streaming not yet implemented. Implement streamChat() and remove this exception!");
         
-        // FRED: --> 
 
         //ADDED THE PRINT CHATS FOR WAVE 6
         // printIncomingChats();
@@ -359,7 +365,7 @@ public class ChatterboxClient {
         // Listen on serverReader
         // Write to userOutput, NOT System.out
 
-        // WAVE 6: 
+        // WAVE 6 continuation:  
         String line;
     while ((line = serverReader.readLine()) != null) {
         userOutput.write((line + "\n").getBytes(StandardCharsets.UTF_8));
