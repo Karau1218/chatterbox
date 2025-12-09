@@ -149,7 +149,7 @@ public class ChatterboxClient {
 
         }
 
-        //NOTE: The expeced order based on LINE 124
+        //NOTE: The expeced order based on the required argument order
     String host = args[0];
     String portString = args[1];
     String username = args[2];
